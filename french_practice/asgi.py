@@ -1,5 +1,5 @@
 """
-Конфигурация ASGI для проекта proj_maths.
+Конфигурация ASGI для проекта french-practice.
 
 Этот файл предоставляет объект ASGI, доступный как переменная уровня модуля с именем ``application``.
 
@@ -12,7 +12,7 @@ import os
 from django.core.asgi import get_asgi_application
 
 # Устанавливаем переменную окружения DJANGO_SETTINGS_MODULE для указания настроек проекта
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj_eng.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'french_practice.settings')
 
 # Получаем и устанавливаем объект ASGI-приложения
 application = get_asgi_application()

@@ -1,5 +1,5 @@
 """
-Настройки Django для проекта proj_eng.
+Настройки Django для проекта french-practice.
 
 Сгенерировано с помощью 'django-admin startproject' в Django 4.1.7.
 
@@ -55,7 +55,7 @@ MIDDLEWARE = [
 ]
 
 # Основной файл URL-ов
-ROOT_URLCONF = 'french_pactice.urls'
+ROOT_URLCONF = 'french_practice.urls'
 
 # Настройки шаблонов
 TEMPLATES = [
