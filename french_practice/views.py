@@ -23,7 +23,6 @@
     - show_stats: Отображает статистику по терминам.
 """
 
-
 from django.shortcuts import render
 from django.core.cache import cache
 from . import terms_work
@@ -31,29 +30,35 @@ from . import texts_work
 
 
 def index(request):
-    return render(request, "index.html")    # работа с http запросом 
+    """Работа с http запросом"""
+    return render(request, "index.html")
 
 
 def terms_list(request):
-    terms = terms_work.get_terms_for_table()    # извлечение терминов и их передача в html-шаблон 
+    """Извлечение терминов и их передача в html-шаблон"""
+    terms = terms_work.get_terms_for_table()
     return render(request, "term_list.html", context={"terms": terms})
 
 
 def texts_list(request):
-    texts = texts_work.get_texts_for_table()    # извлечение текстов и их передача в html-шаблон 
+    """Извлечение текстов и их передача в html-шаблон"""
+    texts = texts_work.get_texts_for_table()
     return render(request, "text_list.html", context={"texts": texts})
 
 
 def test_input(request):
+    """Отображает страницу с мини-викториной."""
     return render(request, "quiz.html")
 
 
-def add_term(request): 
-    return render(request, "term_add.html")     # Добавление нового термина
+def add_term(request):
+    """Добавление нового термина"""
+    return render(request, "term_add.html")
 
 
-def send_term(request): 
-    if request.method == "POST":    # Обработка POST для отправки нового термина
+def send_term(request):
+    """Обработка POST для отправки нового термина"""
+    if request.method == "POST":
         cache.clear()
         user_name = request.POST.get("name")
         new_term = request.POST.get("new_term", "")
@@ -76,5 +81,6 @@ def send_term(request):
 
 
 def show_stats(request):
-    stats = terms_work.get_terms_stats()    # Извлечение статистики по добавленным словам
+    """Извлечение статистики по добавленным словам"""
+    stats = terms_work.get_terms_stats()
     return render(request, "stats.html", stats)
