@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Викторина по французскому</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .option {
+            background-color: #e9ecef;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .option:hover {
+            background-color: #d1d7dc;
+            transform: translateY(-3px);
+        }
+        .timer {
+            font-size: 1.5em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .score {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        .feedback {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .fun-fact {
+            font-style: italic;
+            margin-top: 10px;
+            color: #6c757d;
+        }
+        .next-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: none;
+            margin: 0 auto;
+            transition: all 0.3s;
+        }
+        .next-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .result {
+            font-size: 1.5em;
+            margin: 30px 0;
+            display: none;
+        }
+        .emoji {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <h1>🇫🇷 Увлекательная мини-викторина</h1>
+    
+    <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+    </div>
+    
+    <div class="quiz-container">
+        <div class="timer" id="timer">10</div>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next-btn" id="next-btn">Следующий вопрос</button>
+    </div>
+    
+    <div class="result" id="result"></div>
+
+    <script>
+        // Вопросы для викторины
+        const questions = [
+            {
+                question: "Как сказать 'Спасибо' по-французски?",
+                options: ["Au revoir", "Merci", "S’il vous plaît", "Excusez-moi"],
+                correct: 1,
+                feedback: "Правильно! 'Merci' — это спасибо. Французы говорят его очень часто!",
+                funFact: "Интересный факт: во Франции принято говорить 'Merci beaucoup' (большое спасибо) даже за мелкие услуги."
+            },
+            {
+                question: "Что означает 'Pain'?",
+                options: ["Вода", "Кофе", "Хлеб", "Сыр"],
+                correct: 2,
+                feedback: "Верно! 'Pain' — это хлеб. Французский багет — самый известный вид хлеба!",
+                funFact: "Французы съедают около 10 миллиардов багетов в год — это примерно 320 багетов в секунду!"
+            },
+            {
+                question: "Как будет '5' по-французски?",
+                options: ["Trois", "Cinq", "Sept", "Dix"],
+                correct: 1,
+                feedback: "Точно! 'Cinq' — это пять. Запомни: 1, 2, 3... un, deux, trois!",
+                funFact: "Французские цифры после 70 считаются странно: 80 — это 'quatre-vingts' (4×20), а 90 — 'quatre-vingt-dix' (4×20+10)."
+            },
+            {
+                question: "Выберите правильный перевод для 'Petit'",
+                options: ["Большой", "Маленький", "Хороший", "Друг"],
+                correct: 1,
+                feedback: "Да! 'Petit' — маленький. Например, 'petit café' — маленький кофе.",
+                funFact: "В Париже есть знаменитый ресторан 'Le Petit Nice' — но он совсем не маленький!"
+            },
+            {
+                question: "Какое слово означает 'Пить'?",
+                options: ["Manger", "Boire", "Parler", "Aller"],
+                correct: 1,
+                feedback: "Правильно! 'Boire' — пить. 'Je bois du café' — 'Я пью кофе'.",
+                funFact: "Французы пьют кофе из маленьких чашек и никогда не берут кофе 'с собой' — это часть их культуры."
+            }
+        ];
+
+        // Переменные игры
+        let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 10;
+        let quizCompleted = false;
+
+        // Элементы DOM
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const nextButton = document.getElementById('next-btn');
+        const timerElement = document.getElementById('timer');
+        const resultElement = document.getElementById('result');
+        const progressElement = document.getElementById('progress');
+
+        // Начало игры
+        function startQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        // Показ вопроса
+        function showQuestion() {
+            // Сброс таймера
+            clearInterval(timer);
+            timeLeft = 10;
+            timerElement.textContent = timeLeft;
+            timerElement.style.color = '#e74c3c';
+            
+            // Обновление прогресс-бара
+            progressElement.style.width = `${(currentQuestion / questions.length) * 100}%`;
+            
+            // Показать текущий вопрос
+            const question = questions[currentQuestion];
+            questionElement.textContent = question.question;
+            
+            // Очистить предыдущие варианты
+            optionsElement.innerHTML = '';
+            
+            // Создать кнопки с вариантами ответов
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.className = 'option';
+                button.addEventListener('click', () => selectAnswer(index));
+                optionsElement.appendChild(button);
+            });
+            
+            // Скрыть feedback и кнопку "Далее"
+            feedbackElement.style.display = 'none';
+            nextButton.style.display = 'none';
+            
+            // Запустить таймер
+            startTimer();
+        }
+
+        // Таймер
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                // Изменение цвета при малом времени
+                if (timeLeft <= 3) {
+                    timerElement.style.color = '#ff0000';
+                    timerElement.style.animation = 'pulse 0.5s infinite';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        // Время вышло
+        function timeUp() {
+            feedbackElement.textContent = "Время вышло! Правильный ответ: " + questions[currentQuestion].options[questions[currentQuestion].correct];
+            feedbackElement.className = 'feedback incorrect';
+            feedbackElement.style.display = 'block';
+            nextButton.style.display = 'block';
+            
+            // Деактивировать все кнопки
+            const optionButtons = document.querySelectorAll('.option');
+            optionButtons.forEach(button => {
+                button.disabled = true;
+            });
+        }
+
+        // Выбор ответа
+        function selectAnswer(index) {
+            clearInterval(timer);
+            
+            const question = questions[currentQuestion];
+            const optionButtons = document.querySelectorAll('.option');
+            
+            // Деактивировать все кнопки
+            optionButtons.forEach(button => {
+                button.disabled = true;
+            });
+            
+            // Проверить ответ
+            if (index === question.correct) {
+                // Правильный ответ
+                optionButtons[index].style.backgroundColor = '#d4edda';
+                feedbackElement.textContent = question.feedback + '\n\n' + question.funFact;
+                feedbackElement.className = 'feedback correct';
+                score++;
+            } else {
+                // Неправильный ответ
+                optionButtons[index].style.backgroundColor = '#f8d7da';
+                optionButtons[question.correct].style.backgroundColor = '#d4edda';
+                feedbackElement.textContent = "Неверно! " + question.feedback + '\n\n' + question.funFact;
+                feedbackElement.className = 'feedback incorrect';
+            }
+            
+            feedbackElement.style.display = 'block';
+            nextButton.style.display = 'block';
+        }
+
+        // Следующий вопрос
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // Завершение викторины
+        function endQuiz() {
+            quizCompleted = true;
+            document.querySelector('.quiz-container').style.display = 'none';
+            resultElement.style.display = 'block';
+            progressElement.style.width = '100%';
+            
+            // Показать результат
+            const percentage = Math.round((score / questions.length) * 100);
+            
+            let resultMessage = '';
+            let emoji = '';
+            
+            if (percentage >= 80) {
+                emoji = '🥖';
+                resultMessage = `Ты настоящий француз! ${score} из ${questions.length} правильных ответов!`;
+            } else if (percentage >= 50) {
+                emoji = '🥐';
+                resultMessage = `Très bien! ${score} из ${questions.length}. Ещё немного практики!`;
+            } else {
+                emoji = '📚';
+                resultMessage = `Ooh la la! ${score} из ${questions.length}. Попробуй ещё раз!`;
+            }
+            
+            resultElement.innerHTML = `
+                <div class="emoji">${emoji}</div>
+                <div>${resultMessage}</div>
+                <div style="margin-top: 20px;">
+                    <button onclick="location.reload()" style="
+                        background-color: #3498db;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 12px 25px;
+                        font-size: 1.1em;
+                        cursor: pointer;
+                    ">Пройти ещё раз</button>
+                </div>
+            `;
+        }
+
+        // Обработчики событий
+        nextButton.addEventListener('click', nextQuestion);
+
+        // Начать викторину
+        startQuiz();
+    </script>
+</body>
+</html>
